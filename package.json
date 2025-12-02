@@ -1,0 +1,29 @@
+{
+  "name": "unsung-duet-bot",
+  "version": "1.0.0",
+  "description": "언성 듀엣 다이스 봇",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ssin31400/unsung-duet-bot.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ssin31400/unsung-duet-bot/issues"
+  },
+  "homepage": "https://github.com/ssin31400/unsung-duet-bot#readme",
+  "dependencies": {
+    "discord.js": "^14.25.1",
+    "dotenv": "^17.2.3"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  }
+}
