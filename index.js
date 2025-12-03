@@ -1,5 +1,5 @@
 // 필요한 클래스 import
-import { Client, GatewayIntentBits } from "discord.js";
+import { Client, Events, GatewayIntentBits } from "discord.js";
 import dotenv from "dotenv";
 
 // .env 파일에서 환경 변수를 로드합니다.
@@ -28,6 +28,55 @@ const client = new Client({
 // 클라이언트가 준비되면, 코드를 실행합니다. (딱 한번만)
 client.once("ready", () => {
   console.log("Ready!");
+});
+
+// 서버에서 메시지가 생성될 때마다 실행되는 이벤트 리스너입니다.
+client.on(Events.MessageCreate, async (message) => {
+  // 메시지를 보낸 이가 봇이라면 아무 작업도 하지 않고 반환합니다 (무한 루프 방지).
+  if (message.author.bot) return;
+
+  // 사용자가 "핑" 이라고 메시지를 보내면 "퐁!" 이라고 답장합니다.
+  if (message.content === "핑") {
+    message.reply("퐁!");
+  }
+
+  // 사용자가 "안녕" 이라고 메시지를 보내면, 해당 유저를 언급하며 인사합니다.
+  // toLowerCase()를 사용하여 대소문자 구분 없이 처리합니다.
+  if (message.content.toLowerCase() === "안녕") {
+    message.channel.send(
+      `안녕하세요, ${message.author.toString()}님! 반가워요.`,
+    );
+  }
+});
+
+client.on(Events.InteractionCreate, async (interaction) => {
+  try {
+    // 슬래시 커맨드인지 확인합니다.
+    if (!interaction.isChatInputCommand()) return;
+
+    // commands 객체에서 명령어 이름으로 해당 명령어 모듈을 가져옵니다.
+    const command = commands[interaction.commandName];
+
+    // 명령어가 존재하지 않으면 아무것도 하지 않습니다.
+    if (!command) {
+      console.error(
+        `No command matching \\${interaction.commandName} was found.\\`,
+      );
+      return;
+    }
+
+    // 명령어의 execute 함수를 실행합니다.
+    await command.execute(interaction);
+  } catch (error) {
+    console.error("Error handling interaction:", error);
+    // 사용자에게 오류 메시지를 보낼 수도 있습니다.
+    if (interaction.isRepliable()) {
+      await interaction.reply({
+        content: "명령어 실행 중 오류가 발생했습니다.",
+        ephemeral: true,
+      });
+    }
+  }
 });
 
 // .env 파일에서 가져온 토큰을 사용하여 Discord에 로그인합니다.
