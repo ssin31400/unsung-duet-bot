@@ -2,6 +2,9 @@
 import { REST, Routes } from "discord.js";
 import dotenv from "dotenv";
 import { commands } from "./commands"; // 우리가 정의한 명령어 모듈들
+import fs from "fs";
+import path from "path";
+const __dirname = path.resolve();
 
 // .env 파일에서 환경 변수를 로드합니다.
 dotenv.config();
@@ -33,5 +36,22 @@ export async function deployCommands(guildId) {
     );
   } catch (error) {
     console.error(error);
+  }
+}
+
+const commandsPath = path.join(__dirname, 'commands');
+const commandFiles = fs
+  .readdirSync(commandsPath)
+  .filter((file) => file.endsWith(".js"));
+for (const file of commandFiles) {
+  const filePath = path.join(commandsPath, file);
+  const command = require(filePath);
+  // Set a new item in the Collection with the key as the command name and the value as the exported module
+  if ("data" in command && "execute" in command) {
+    client.commands.set(command.data.name, command);
+  } else {
+    console.log(
+      `[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`,
+    );
   }
 }

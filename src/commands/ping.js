@@ -1,5 +1,5 @@
 // src/commands/ping.js
-import { SlashCommandBuilder, ChatInputCommandInteraction } from "discord.js";
+import { SlashCommandBuilder } from "discord.js";
 
 // 명령어의 기본 정보를 정의합니다.
 export const data = new SlashCommandBuilder()

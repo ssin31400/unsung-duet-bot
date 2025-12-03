@@ -1,5 +1,5 @@
 // 필요한 클래스 import
-import { Client, Events, GatewayIntentBits } from "discord.js";
+import { Client, Events, GatewayIntentBits, Collection } from "discord.js";
 import dotenv from "dotenv";
 
 // .env 파일에서 환경 변수를 로드합니다.
@@ -48,6 +48,8 @@ client.on(Events.MessageCreate, async (message) => {
     );
   }
 });
+
+client.commands = new Collection();
 
 client.on(Events.InteractionCreate, async (interaction) => {
   try {
