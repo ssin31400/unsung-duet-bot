@@ -1,6 +1,9 @@
 // 필요한 클래스 import
 import { Client, Events, GatewayIntentBits, Collection } from "discord.js";
 import dotenv from "dotenv";
+import fs from "fs";
+import path from "path";
+const __dirname = path.resolve();
 
 // .env 파일에서 환경 변수를 로드합니다.
 dotenv.config();
@@ -26,7 +29,7 @@ const client = new Client({
 });
 
 // 클라이언트가 준비되면, 코드를 실행합니다. (딱 한번만)
-client.once("ready", () => {
+client.once("clientReady", () => {
   console.log("Ready!");
 });
 
@@ -51,13 +54,34 @@ client.on(Events.MessageCreate, async (message) => {
 
 client.commands = new Collection();
 
+// 명령어 파일을 불러옵니다.
+const commandsPath = path.join(__dirname, 'src/commands');
+const commandFiles = fs
+  .readdirSync(commandsPath)
+  .filter((file) => file.endsWith(".js"));
+
+for (const file of commandFiles) {
+  const filePath = path.join(commandsPath, file);
+  const fileUrl = new URL(`file://${filePath}`).href;
+  const command = await import(fileUrl);
+  
+  // 명령어를 Collection에서 불러와 새로운 아이템으로 세팅합니다.
+  if ("data" in command && "execute" in command) {
+    client.commands.set(command.data.name, command);
+  } else {
+    console.log(
+      `[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`,
+    );
+  }
+}
+
 client.on(Events.InteractionCreate, async (interaction) => {
   try {
     // 슬래시 커맨드인지 확인합니다.
     if (!interaction.isChatInputCommand()) return;
 
     // commands 객체에서 명령어 이름으로 해당 명령어 모듈을 가져옵니다.
-    const command = commands[interaction.commandName];
+    const command = client.commands.get(interaction.commandName);
 
     // 명령어가 존재하지 않으면 아무것도 하지 않습니다.
     if (!command) {
