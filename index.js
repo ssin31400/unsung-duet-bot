@@ -55,7 +55,7 @@ client.on(Events.MessageCreate, async (message) => {
 client.commands = new Collection();
 
 // 명령어 파일을 불러옵니다.
-const commandsPath = path.join(__dirname, 'src/commands');
+const commandsPath = path.join(__dirname, "src/commands");
 const commandFiles = fs
   .readdirSync(commandsPath)
   .filter((file) => file.endsWith(".js"));
@@ -64,7 +64,7 @@ for (const file of commandFiles) {
   const filePath = path.join(commandsPath, file);
   const fileUrl = new URL(`file://${filePath}`).href;
   const command = await import(fileUrl);
-  
+
   // 명령어를 Collection에서 불러와 새로운 아이템으로 세팅합니다.
   if ("data" in command && "execute" in command) {
     client.commands.set(command.data.name, command);
