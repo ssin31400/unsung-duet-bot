@@ -2,6 +2,8 @@
 import { SlashCommandBuilder, MessageFlags } from "discord.js";
 import pc from "../character/pc.js";
 
+const shifter = pc.shifter;
+const binder = pc.binder;
 const FRAGMENT_COUNT = 6;
 const SHIFTER_NAME = "시프터";
 const BINDER_NAME = "바인더";
@@ -53,19 +55,31 @@ export async function execute(interaction) {
     return;
   } else {
     if (role === "shifter") {
-      pc.shifter.set("name", name);
-      pc.shifter.set("role", role);
-      pc.shifter.set("roleTag", SHIFTER_NAME);
-      pc.shifter.set("fragments", fragments);
+      if (
+        Array.isArray(shifter.get("fragments")) &&
+        shifter.get("fragments").length > 0
+      ) {
+        shifter.set("fragments", new Array());
+      }
+      shifter.set("name", name);
+      shifter.set("role", role);
+      shifter.set("roleTag", SHIFTER_NAME);
+      shifter.set("fragments", fragments);
     } else {
-      pc.binder.set("name", name);
-      pc.binder.set("role", role);
-      pc.binder.set("roleTag", BINDER_NAME);
-      pc.binder.set("fragments", fragments);
+      if (
+        Array.isArray(binder.get("fragments")) &&
+        binder.get("fragments").length > 0
+      ) {
+        binder.set("fragments", new Array());
+      }
+      binder.set("name", name);
+      binder.set("role", role);
+      binder.set("roleTag", BINDER_NAME);
+      binder.set("fragments", fragments);
     }
   }
 
   await interaction.reply({
-    content: `${name} 캐릭터의 프래그먼트가 등록되었습니다.`,
+    content: `**${name}** 캐릭터의 프래그먼트가 등록되었습니다.`,
   });
 }

@@ -1,6 +1,11 @@
 // src/commands/inquireFragment.js
-import { SlashCommandBuilder } from "discord.js";
+import { SlashCommandBuilder, EmbedBuilder } from "discord.js";
 import pc from "../character/pc.js";
+
+const shifter = pc.shifter;
+const binder = pc.binder;
+const embed = new EmbedBuilder();
+embed.setColor("#FF5733");
 
 // 명령어의 기본 정보를 정의합니다.
 export const data = new SlashCommandBuilder()
@@ -19,13 +24,22 @@ export const data = new SlashCommandBuilder()
 
 // 명령어가 실행될 때 호출될 함수입니다.
 export async function execute(interaction) {
-  let replyMsg = "";
   const role = interaction.options.getString("role");
   if (role === "shifter") {
-    replyMsg = pc.shifter.entries().toString();
+    embed.setTitle(`${shifter.get("name")}의 프래그먼트 목록`);
+    embed.setDescription(`역할: ${shifter.get("roleTag")}`);
+
+    let fragments = shifter.get("fragments");
+
+    for (let index = 0; index < fragments.length; index++) {
+      embed.addFields({
+        name: `프래그먼트 ${index + 1}`,
+        value: fragments[index],
+      });
+    }
   }
 
   await interaction.reply({
-    content: replyMsg,
+    embeds: [embed],
   });
 }

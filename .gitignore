@@ -139,5 +139,6 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 
 # Ignore SQLite WAL and SHM files
+*.sqlite
 *.sqlite-shm
 *.sqlite-wal
