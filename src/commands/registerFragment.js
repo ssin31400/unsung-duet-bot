@@ -26,14 +26,14 @@ export const data = new SlashCommandBuilder()
       option
         .setName("name")
         .setDescription("시프터 또는 바인더의 이름을 입력합니다.")
-        .setRequired(true), // 선택적 옵션
+        .setRequired(true) // 선택적 옵션
   )
   .addStringOption(
     (option) =>
       option
         .setName("fragments")
         .setDescription("입력 예시 ex) 내용1/내용2/내용3.../내용6")
-        .setRequired(true), // 선택적 옵션
+        .setRequired(true) // 선택적 옵션
   );
 
 // 명령어가 실행될 때 호출될 함수입니다.
@@ -42,8 +42,8 @@ export async function execute(interaction) {
   const fragStr = interaction.options.getString("fragments");
   fragments = fragStr.split("/");
 
-  console.log("name: ", name);
-  console.log("fragments: ", fragments);
+  // console.log("name: ", name);
+  // console.log("fragments: ", fragments);
 
   if (fragments.length < FRAGMENT_COUNT) {
     await interaction.reply({
@@ -60,7 +60,7 @@ export async function execute(interaction) {
   fs.writeFileSync(
     shifterPath + "shifter.json",
     JSON.stringify(shifter),
-    "utf8",
+    "utf8"
   );
 
   await interaction.reply({
