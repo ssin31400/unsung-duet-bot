@@ -1,20 +1,12 @@
 // src/commands/registerFragment.js
 import { SlashCommandBuilder, MessageFlags } from "discord.js";
-
-import fs from "fs";
-import path from "path";
-const __dirname = path.resolve();
-
-// 시프터/바인더 파일 불러오기
-const shifterPath = path.join(__dirname, "src/json/");
-const shifterFile = fs.readFileSync(shifterPath + "shifter.json", "utf8");
-const shifter = JSON.parse(shifterFile);
-// const binderPath = path.join(__dirname, 'src/json/binder.json');
-// const binderFile = fs
-//   .readFileSync(binderPath);
+import pc from "../character/pc.js";
 
 const FRAGMENT_COUNT = 6;
+const SHIFTER_NAME = "시프터";
+const BINDER_NAME = "바인더";
 let name = "";
+let role = "";
 let fragments = [];
 
 // 명령어의 기본 정보를 정의합니다.
@@ -28,6 +20,16 @@ export const data = new SlashCommandBuilder()
         .setDescription("시프터 또는 바인더의 이름을 입력합니다.")
         .setRequired(true) // 선택적 옵션
   )
+  .addStringOption((option) =>
+    option
+      .setName("role")
+      .setDescription("시프터 또는 바인더 중 역할을 선택합니다.")
+      .setRequired(true) // 선택적 옵션
+      .addChoices(
+        { name: "시프터", value: "shifter" },
+        { name: "바인더", value: "binder" }
+      )
+  )
   .addStringOption(
     (option) =>
       option
@@ -39,11 +41,9 @@ export const data = new SlashCommandBuilder()
 // 명령어가 실행될 때 호출될 함수입니다.
 export async function execute(interaction) {
   name = interaction.options.getString("name");
+  role = interaction.options.getString("role");
   const fragStr = interaction.options.getString("fragments");
   fragments = fragStr.split("/");
-
-  // console.log("name: ", name);
-  // console.log("fragments: ", fragments);
 
   if (fragments.length < FRAGMENT_COUNT) {
     await interaction.reply({
@@ -52,16 +52,18 @@ export async function execute(interaction) {
     });
     return;
   } else {
-    shifter.name = name;
-    shifter.fragments = fragments;
-    console.log("shifter: ", JSON.stringify(shifter));
+    if (role === "shifter") {
+      pc.shifter.set("name", name);
+      pc.shifter.set("role", role);
+      pc.shifter.set("roleTag", SHIFTER_NAME);
+      pc.shifter.set("fragments", fragments);
+    } else {
+      pc.binder.set("name", name);
+      pc.binder.set("role", role);
+      pc.binder.set("roleTag", BINDER_NAME);
+      pc.binder.set("fragments", fragments);
+    }
   }
-
-  fs.writeFileSync(
-    shifterPath + "shifter.json",
-    JSON.stringify(shifter),
-    "utf8"
-  );
 
   await interaction.reply({
     content: `${name} 캐릭터의 프래그먼트가 등록되었습니다.`,

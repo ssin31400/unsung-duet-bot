@@ -137,3 +137,7 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# Ignore SQLite WAL and SHM files
+*.sqlite-shm
+*.sqlite-wal

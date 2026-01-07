@@ -1,0 +1,31 @@
+// src/commands/inquireFragment.js
+import { SlashCommandBuilder } from "discord.js";
+import pc from "../character/pc.js";
+
+// 명령어의 기본 정보를 정의합니다.
+export const data = new SlashCommandBuilder()
+  .setName("inqfrag") // 슬래시 명령어 이름
+  .setDescription("등록된 프래그먼트를 조회합니다.")
+  .addStringOption((option) =>
+    option
+      .setName("role")
+      .setDescription("시프터 또는 바인더 중 역할을 선택합니다.")
+      .setRequired(true) // 선택적 옵션
+      .addChoices(
+        { name: "시프터", value: "shifter" },
+        { name: "바인더", value: "binder" }
+      )
+  );
+
+// 명령어가 실행될 때 호출될 함수입니다.
+export async function execute(interaction) {
+  let replyMsg = "";
+  const role = interaction.options.getString("role");
+  if (role === "shifter") {
+    replyMsg = pc.shifter.entries().toString();
+  }
+
+  await interaction.reply({
+    content: replyMsg,
+  });
+}

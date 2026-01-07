@@ -13,7 +13,7 @@ const token = process.env.DISCORD_TOKEN;
 // 토큰이 설정되지 않았으면 오류를 출력하고 종료합니다.
 if (!token) {
   console.error(
-    "오류: DISCORD_TOKEN이 .env 파일에 설정되어 있지 않습니다. .env 파일을 확인해주세요.",
+    "오류: DISCORD_TOKEN이 .env 파일에 설정되어 있지 않습니다. .env 파일을 확인해주세요."
   );
   process.exit(1);
 }
@@ -31,6 +31,7 @@ const client = new Client({
 // 클라이언트가 준비되면, 코드를 실행합니다. (딱 한번만)
 client.once("clientReady", () => {
   console.log("Ready!");
+  //client.shifter = new Enmap({ name: "shifter" });
 });
 
 // 서버에서 메시지가 생성될 때마다 실행되는 이벤트 리스너입니다.
@@ -47,7 +48,7 @@ client.on(Events.MessageCreate, async (message) => {
   // toLowerCase()를 사용하여 대소문자 구분 없이 처리합니다.
   if (message.content.toLowerCase() === "안녕") {
     message.channel.send(
-      `안녕하세요, ${message.author.toString()}님! 반가워요.`,
+      `안녕하세요, ${message.author.toString()}님! 반가워요.`
     );
   }
 });
@@ -70,7 +71,7 @@ for (const file of commandFiles) {
     client.commands.set(command.data.name, command);
   } else {
     console.log(
-      `[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`,
+      `[WARNING] The command at ${filePath} is missing a required "data" or "execute" property.`
     );
   }
 }
@@ -86,7 +87,7 @@ client.on(Events.InteractionCreate, async (interaction) => {
     // 명령어가 존재하지 않으면 아무것도 하지 않습니다.
     if (!command) {
       console.error(
-        `No command matching \\${interaction.commandName} was found.\\`,
+        `No command matching \\${interaction.commandName} was found.\\`
       );
       return;
     }
