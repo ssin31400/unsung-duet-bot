@@ -20,13 +20,13 @@ export const data = new SlashCommandBuilder()
       option
         .setName("name")
         .setDescription("시프터 또는 바인더의 이름을 입력합니다.")
-        .setRequired(true) // 선택적 옵션
+        .setRequired(true) // 필수 옵션
   )
   .addStringOption((option) =>
     option
       .setName("role")
       .setDescription("시프터 또는 바인더 중 역할을 선택합니다.")
-      .setRequired(true) // 선택적 옵션
+      .setRequired(true) // 필수 옵션
       .addChoices(
         { name: "시프터", value: "shifter" },
         { name: "바인더", value: "binder" }
@@ -37,7 +37,7 @@ export const data = new SlashCommandBuilder()
       option
         .setName("fragments")
         .setDescription("입력 예시 ex) 내용1/내용2/내용3.../내용6")
-        .setRequired(true) // 선택적 옵션
+        .setRequired(true) // 필수 옵션
   );
 
 // 명령어가 실행될 때 호출될 함수입니다.
@@ -46,6 +46,15 @@ export async function execute(interaction) {
   role = interaction.options.getString("role");
   const fragStr = interaction.options.getString("fragments");
   fragments = fragStr.split("/");
+  let targetCharacter = null;
+
+  if (name.trim() === "") {
+    await interaction.reply({
+      content: "이름은 공백일 수 없습니다.",
+      flags: MessageFlags.Ephemeral,
+    });
+    return;
+  }
 
   if (fragments.length < FRAGMENT_COUNT) {
     await interaction.reply({
@@ -55,28 +64,27 @@ export async function execute(interaction) {
     return;
   } else {
     if (role === "shifter") {
-      if (
-        Array.isArray(shifter.get("fragments")) &&
-        shifter.get("fragments").length > 0
-      ) {
-        shifter.set("fragments", new Array());
-      }
-      shifter.set("name", name);
-      shifter.set("role", role);
-      shifter.set("roleTag", SHIFTER_NAME);
-      shifter.set("fragments", fragments);
+      targetCharacter = shifter;
+      targetCharacter.set("roleTag", SHIFTER_NAME);
+    } else if (role === "binder") {
+      targetCharacter = binder;
+      targetCharacter.set("roleTag", BINDER_NAME);
     } else {
-      if (
-        Array.isArray(binder.get("fragments")) &&
-        binder.get("fragments").length > 0
-      ) {
-        binder.set("fragments", new Array());
-      }
-      binder.set("name", name);
-      binder.set("role", role);
-      binder.set("roleTag", BINDER_NAME);
-      binder.set("fragments", fragments);
+      await interaction.reply({
+        content: "유효하지 않은 역할입니다.",
+        flags: MessageFlags.Ephemeral,
+      });
+      return;
     }
+    if (
+      Array.isArray(targetCharacter.get("fragments")) &&
+      targetCharacter.get("fragments").length > 0
+    ) {
+      targetCharacter.set("fragments", new Array());
+    }
+    targetCharacter.set("name", name);
+    targetCharacter.set("role", role);
+    targetCharacter.set("fragments", fragments);
   }
 
   await interaction.reply({

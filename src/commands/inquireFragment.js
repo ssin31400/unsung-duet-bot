@@ -25,18 +25,30 @@ export const data = new SlashCommandBuilder()
 // 명령어가 실행될 때 호출될 함수입니다.
 export async function execute(interaction) {
   const role = interaction.options.getString("role");
+  let targetCharacter = null;
+
   if (role === "shifter") {
-    embed.setTitle(`${shifter.get("name")}의 프래그먼트 목록`);
-    embed.setDescription(`역할: ${shifter.get("roleTag")}`);
+    targetCharacter = shifter;
+  } else if (role === "binder") {
+    targetCharacter = binder;
+  } else {
+    await interaction.reply({
+      content: "유효하지 않은 역할입니다.",
+      flags: MessageFlags.Ephemeral,
+    });
+    return;
+  }
 
-    let fragments = shifter.get("fragments");
+  embed.setTitle(`${targetCharacter.get("name")}의 프래그먼트 목록`);
+  embed.setDescription(`역할: ${targetCharacter.get("roleTag")}`);
 
-    for (let index = 0; index < fragments.length; index++) {
-      embed.addFields({
-        name: `프래그먼트 ${index + 1}`,
-        value: fragments[index],
-      });
-    }
+  let fragments = targetCharacter.get("fragments");
+  embed.spliceFields(0, embed.data.fields?.length ?? 0);
+  for (let index = 0; index < fragments.length; index++) {
+    embed.addFields({
+      name: `프래그먼트 ${index + 1}`,
+      value: fragments[index],
+    });
   }
 
   await interaction.reply({
