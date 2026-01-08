@@ -79,21 +79,31 @@ for (const file of commandFiles) {
 client.on(Events.InteractionCreate, async (interaction) => {
   try {
     // 슬래시 커맨드인지 확인합니다.
-    if (!interaction.isChatInputCommand()) return;
+    if (interaction.isChatInputCommand()) {
+      // commands 객체에서 명령어 이름으로 해당 명령어 모듈을 가져옵니다.
+      const command = client.commands.get(interaction.commandName);
 
-    // commands 객체에서 명령어 이름으로 해당 명령어 모듈을 가져옵니다.
-    const command = client.commands.get(interaction.commandName);
+      // 명령어가 존재하지 않으면 아무것도 하지 않습니다.
+      if (!command) {
+        console.error(
+          `No command matching \\${interaction.commandName} was found.\\`
+        );
+        return;
+      }
 
-    // 명령어가 존재하지 않으면 아무것도 하지 않습니다.
-    if (!command) {
-      console.error(
-        `No command matching \\${interaction.commandName} was found.\\`
-      );
-      return;
+      // 명령어의 execute 함수를 실행합니다.
+      await command.execute(interaction);
+    } else if (interaction.isButton()) {
+      // 버튼 상호작용 처리
+      const command = client.commands.get("mutfrag");
+      if (!command) {
+        console.error(
+          `No command matching \\${interaction.customId} was found.\\`
+        );
+        return;
+      }
+      await command.handleButton(interaction);
     }
-
-    // 명령어의 execute 함수를 실행합니다.
-    await command.execute(interaction);
   } catch (error) {
     console.error("Error handling interaction:", error);
     // 사용자에게 오류 메시지를 보낼 수도 있습니다.
