@@ -45,7 +45,9 @@ export async function execute(interaction) {
   name = interaction.options.getString("name");
   role = interaction.options.getString("role");
   const fragStr = interaction.options.getString("fragments");
-  fragments = fragStr.split("/");
+  fragments = fragStr.split("/").map((element) => {
+    return { value: element.trim(), changed: false, changedValue: "" };
+  });
   let targetCharacter = null;
 
   if (name.trim() === "") {

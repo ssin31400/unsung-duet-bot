@@ -57,7 +57,7 @@ export async function execute(interaction) {
   for (let index = 0; index < fragments.length; index++) {
     embed.addFields({
       name: `프래그먼트 ${index + 1}`,
-      value: fragments[index],
+      value: fragments[index].value,
     });
   }
 

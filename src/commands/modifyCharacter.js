@@ -65,7 +65,9 @@ export async function execute(interaction) {
       content: `${role === "shifter" ? "시프터" : "바인더"}의 이름이 **"${value}"**(으)로 수정되었습니다.`,
     });
   } else if (choice === "fragments") {
-    const fragments = value.split("/");
+    const fragments = value.split("/").map((element) => {
+      return { value: element.trim(), changed: false, changedValue: "" };
+    });
     if (fragments.length < FRAGMENT_COUNT) {
       await interaction.reply({
         content: `프래그먼트는 ${FRAGMENT_COUNT}개 이상 등록해야 합니다.`,
