@@ -29,6 +29,7 @@ export async function execute(interaction) {
     targetCharacter = shifter;
   } else if (role === "binder") {
     targetCharacter = binder;
+    targetCharacter.set("fragEffCnt", 6); // 바인더의 프래그먼트 효과 개수 초기화
   } else {
     await interaction.reply({
       content: "유효하지 않은 역할입니다.",
