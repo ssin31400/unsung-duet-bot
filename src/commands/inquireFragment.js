@@ -39,6 +39,16 @@ export async function execute(interaction) {
     return;
   }
 
+  if (
+    targetCharacter.get("name").trim() === "" ||
+    targetCharacter.get("fragments").length === 0
+  ) {
+    await interaction.reply({
+      content: `${role === "shifter" ? "시프터" : "바인더"}의 정보가 등록되어 있지 않습니다.`,
+    });
+    return;
+  }
+
   embed.setTitle(`${targetCharacter.get("name")}의 프래그먼트 목록`);
   embed.setDescription(`역할: ${targetCharacter.get("roleTag")}`);
 
