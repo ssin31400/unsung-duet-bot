@@ -31,7 +31,6 @@ const client = new Client({
 // 클라이언트가 준비되면, 코드를 실행합니다. (딱 한번만)
 client.once("clientReady", () => {
   console.log("Ready!");
-  //client.shifter = new Enmap({ name: "shifter" });
 });
 
 // 서버에서 메시지가 생성될 때마다 실행되는 이벤트 리스너입니다.
@@ -103,6 +102,26 @@ client.on(Events.InteractionCreate, async (interaction) => {
         return;
       }
       await command.handleButton(interaction);
+    } else if (interaction.isStringSelectMenu()) {
+      // 셀렉트 메뉴 상호작용 처리
+      const command = client.commands.get("mutfrag");
+      if (!command) {
+        console.error(
+          `No command matching \\${interaction.customId} was found.\\`
+        );
+        return;
+      }
+      await command.handleMenu(interaction);
+    } else if (interaction.isModalSubmit()) {
+      // 모달 제출 상호작용 처리
+      const command = client.commands.get("mutfrag");
+      if (!command) {
+        console.error(
+          `No command matching \\${interaction.customId} was found.\\`
+        );
+        return;
+      }
+      await command.handleSubmit(interaction);
     }
   } catch (error) {
     console.error("Error handling interaction:", error);
