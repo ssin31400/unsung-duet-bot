@@ -2,8 +2,9 @@
 import {
   SlashCommandBuilder,
   MessageFlags,
-  MessageActionRow,
-  MessageButton,
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
 } from "discord.js";
 import pc from "../character/pc.js";
 
@@ -83,13 +84,13 @@ export async function handleButton(interaction) {
 function createFragmentMutationButtons(character) {
   let fragments = character.get("fragments");
 
-  const buttons = new MessageActionRow();
+  const buttons = new ActionRowBuilder();
   for (let i = 0; i < fragments.length; i++) {
     buttons.addComponents(
-      new MessageButton()
+      new ButtonBuilder()
         .setCustomId(`${character.get("role")}_frag_${i}`)
         .setLabel(fragments[i].value)
-        .setStyle("DANGER")
+        .setStyle(ButtonStyle.Danger)
     );
   }
 
