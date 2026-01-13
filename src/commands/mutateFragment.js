@@ -94,7 +94,6 @@ function createFragmentMutationMenu(character) {
     .setCustomId(`${character.get("role")}_frag_select`)
     .setPlaceholder("변이할 프래그먼트를 선택하세요.")
     .addOptions(
-      // 이미 변이한 프래그먼트는 선택 불가능하게 설정합니다. (추후 수정)
       fragments.map((frag, index) =>
         new StringSelectMenuOptionBuilder()
           .setLabel(frag.value)
