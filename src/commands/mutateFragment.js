@@ -14,7 +14,7 @@ import pc from "../character/pc.js";
 
 const shifter = pc.shifter;
 const binder = pc.binder;
-const targetCharacter = null;
+let targetCharacter = null;
 
 // 명령어의 기본 정보를 정의합니다.
 export const data = new SlashCommandBuilder()
@@ -61,12 +61,26 @@ export async function handleMenu(interaction) {
   const fragIndex = parseInt(interaction.values[0], 10);
 
   // 프래그먼트 변이 로직을 여기에 구현합니다.
+  if (
+    isNaN(fragIndex) ||
+    fragIndex < 0 ||
+    fragIndex >= targetCharacter.get("fragments").length
+  ) {
+    await interaction.reply({
+      content: "유효하지 않은 프래그먼트 선택입니다.",
+      flags: MessageFlags.Ephemeral,
+    });
+    return;
+  } else if (targetCharacter.get("fragments")[fragIndex].changed) {
+    await interaction.reply({
+      content: "이미 변이한 프래그먼트입니다.",
+      flags: MessageFlags.Ephemeral,
+    });
+    return;
+  }
   let fragments = targetCharacter.get("fragments");
   fragments[fragIndex].changed = true;
-
-  console.log(
-    `${targetCharacter.get("name")}의 프래그먼트 "${fragments[fragIndex].value}"가 변이되었습니다.`
-  );
+  targetCharacter.set("fragments", fragments);
 
   // 변이 내용 입력 모달을 표시합니다.
   handleMutationInput(interaction);
@@ -115,18 +129,20 @@ function handleMutationInput(interaction) {
 // 변이 내용을 입력받은 후 처리하는 함수입니다.
 export async function handleSubmit(interaction) {
   const mutationContent = interaction.fields.getTextInputValue("mutationInput");
+  const mutfragIdx = Number(
+    targetCharacter
+      .get("fragments")
+      .findIndex((frag) => frag.changed && frag.changedValue.trim() === "")
+  );
 
   // 변이 내용을 저장합니다.
   let fragments = targetCharacter.get("fragments");
   fragments[mutfragIdx].changedValue = mutationContent;
   targetCharacter.set("fragments", fragments);
 
-  console.log(
-    `${targetCharacter.get("name")}의 프래그먼트 "${fragments[mutfragIdx].value}"가 "${mutationContent}"로 변이되었습니다.`
-  );
-
-  await interaction.editReply({
-    content: `프래그먼트 변이가 완료되었습니다: **${fragments[mutfragIdx].value}** → **${mutationContent}**`,
+  await interaction.deferReply();
+  await interaction.followUp({
+    content: `프래그먼트 변이가 완료되었습니다\n: **${fragments[mutfragIdx].value}** → **${mutationContent}**`,
     components: [],
   });
 }

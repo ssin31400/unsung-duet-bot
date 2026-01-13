@@ -55,10 +55,17 @@ export async function execute(interaction) {
   let fragments = targetCharacter.get("fragments");
   embed.spliceFields(0, embed.data.fields?.length ?? 0);
   for (let index = 0; index < fragments.length; index++) {
-    embed.addFields({
-      name: `프래그먼트 ${index + 1}`,
-      value: fragments[index].value,
-    });
+    if (fragments[index].changed) {
+      embed.addFields({
+        name: `프래그먼트 ${index + 1} (변이)`,
+        value: `~~${fragments[index].value}~~\n ↳${fragments[index].changedValue}`,
+      });
+    } else {
+      embed.addFields({
+        name: `프래그먼트 ${index + 1}`,
+        value: fragments[index].value,
+      });
+    }
   }
 
   await interaction.reply({
